@@ -1,0 +1,8 @@
+## Interface: 120000, 120001, 120005, 120100, 120105
+## Title: CooldownFlash
+## Notes: Briefly flashes the icon and remaining cooldown of a long-cooldown ability you pressed while it was on cooldown.
+## Author: operator
+## Version: 1.0
+## SavedVariables: CooldownFlashDB
+
+CooldownFlash.lua
