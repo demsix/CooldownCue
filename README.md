@@ -7,6 +7,8 @@ in the middle, styled like Blizzard's Cooldown Manager. It works in combat.
 Abilities with a short cooldown are ignored (default: 15 seconds or less), so the
 popup only appears for the long cooldowns you actually want to be reminded about.
 
+<img width="400" height="312" alt="gif" src="https://github.com/user-attachments/assets/92b649ea-a48a-419a-8c90-d072a203b49e" />
+
 ## Install
 
 Copy the `CooldownFlash` folder into `World of Warcraft/_retail_/Interface/AddOns/`
