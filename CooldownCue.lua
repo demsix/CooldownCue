@@ -1,4 +1,4 @@
--- CooldownFlash: when you press an action button whose spell/item is on cooldown,
+-- CooldownCue: when you press an action button whose spell/item is on cooldown,
 -- flash its icon, name and remaining time on screen for a short while.
 --
 -- Midnight (12.0+): cooldown numbers are "secret" in combat, so we never read them.
@@ -16,12 +16,12 @@ local DEFAULTS = {
 }
 
 local db
-local probing = false  -- /cdf probe
-local debug = false    -- /cdf debug
+local probing = false  -- /cdc probe
+local debug = false    -- /cdc debug
 local frame, icon, cd, mask, overlay
-local countdownFont = CreateFont("CooldownFlashCountdownFont")
+local countdownFont = CreateFont("CooldownCueCountdownFont")
 
-local function Print(...) print("|cff33ccffCooldownFlash:|r", ...) end
+local function Print(...) print("|cff33ccffCooldownCue:|r", ...) end
 
 ---------------------------------------------------------------------------
 -- Display
@@ -89,7 +89,7 @@ local function Flash(iconTexture, setCooldown)
 end
 
 local function BuildFrame()
-    frame = CreateFrame("Frame", "CooldownFlashFrame", UIParent)
+    frame = CreateFrame("Frame", "CooldownCueFrame", UIParent)
     frame:SetFrameStrata("HIGH")
     frame:SetClampedToScreen(true)
     frame:Hide()
@@ -114,7 +114,7 @@ local function BuildFrame()
     cd:SetDrawEdge(false)
     cd:SetDrawBling(false)
     cd:SetHideCountdownNumbers(false)
-    cd:SetCountdownFont("CooldownFlashCountdownFont")
+    cd:SetCountdownFont("CooldownCueCountdownFont")
 
     frame:SetScript("OnUpdate", function(self)
         if self.moving then return end
@@ -123,7 +123,7 @@ local function BuildFrame()
         if left < 0.25 then self:SetAlpha(left / 0.25) end -- fade out
     end)
 
-    -- dragging (only while /cdf unlock is active)
+    -- dragging (only while /cdc unlock is active)
     frame:SetMovable(true)
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", function(self) if self.unlocked then self.moving = true self:StartMoving() end end)
@@ -305,7 +305,7 @@ end
 -- Slash commands
 ---------------------------------------------------------------------------
 local function Help()
-    Print("commands (/cdf or /cooldownflash):")
+    Print("commands (/cdc or /cooldowncue):")
     print("  size <16-256>     icon size (now " .. db.iconSize .. ")")
     print("  font <8-120>      countdown number size (now " .. db.fontSize .. ")")
     print("  seconds           toggle seconds-only countdown, e.g. 75 instead of 1:15 (now " .. tostring(db.secondsOnly) .. ")")
@@ -324,9 +324,9 @@ local function Test()
     Flash(134400, function(c) c:SetCooldown(GetTime(), 12.3) end)
 end
 
-SLASH_COOLDOWNFLASH1 = "/cdf"
-SLASH_COOLDOWNFLASH2 = "/cooldownflash"
-SlashCmdList.COOLDOWNFLASH = function(input)
+SLASH_COOLDOWNCUE1 = "/cdc"
+SLASH_COOLDOWNCUE2 = "/cooldowncue"
+SlashCmdList.COOLDOWNCUE = function(input)
     local cmd, a, b = strsplit(" ", strtrim(input):lower(), 3)
     if cmd == "size" and tonumber(a) then
         db.iconSize = math.max(16, math.min(256, tonumber(a)))
@@ -366,7 +366,7 @@ SlashCmdList.COOLDOWNFLASH = function(input)
         frame:EnableMouse(true)
         Flash(134400, function(c) c:SetCooldown(GetTime(), 99) end)
         shownUntil = math.huge
-        Print("drag the display, then /cdf lock")
+        Print("drag the display, then /cdc lock")
     elseif cmd == "lock" then
         frame.unlocked = false
         frame:EnableMouse(false)
@@ -383,7 +383,7 @@ SlashCmdList.COOLDOWNFLASH = function(input)
 end
 
 ---------------------------------------------------------------------------
--- Probe (/cdf probe): report every way we can think of to get a spell's base
+-- Probe (/cdc probe): report every way we can think of to get a spell's base
 -- cooldown, so we can see which ones work in combat. Fully separate from the
 -- flash path: its own hook, everything pcall'd, only runs while enabled.
 ---------------------------------------------------------------------------
@@ -408,7 +408,7 @@ local function Probe(slot)
     local kind, id = GetActionInfo(slot)
     local spell = id
     if kind == "macro" then spell = GetMacroSpell(id) end
-    print(("|cff33ccffCDF probe:|r slot %d kind=%s id=%s spell=%s inCombat=%s"):format(
+    print(("|cff33ccffCDC probe:|r slot %d kind=%s id=%s spell=%s inCombat=%s"):format(
         slot, tostring(kind), tostring(id), tostring(spell), tostring(InCombatLockdown())))
     if not spell then return end
 
@@ -475,8 +475,10 @@ loader:RegisterEvent("ADDON_LOADED")
 loader:SetScript("OnEvent", function(self, _, name)
     if name ~= ADDON then return end
     self:UnregisterEvent("ADDON_LOADED")
-    CooldownFlashDB = CooldownFlashDB or {}
-    db = CooldownFlashDB
+    -- CooldownCueDB; settings saved under the addon's previous name are carried over once
+    CooldownCueDB = CooldownCueDB or CooldownFlashDB or {}
+    db = CooldownCueDB
+    CooldownFlashDB = nil
     if db.size then   -- pre-1.4: one size, icon was twice the font size
         db.fontSize, db.iconSize, db.size = db.size, db.size * 2, nil
     end

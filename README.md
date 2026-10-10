@@ -1,4 +1,4 @@
-# CooldownFlash
+# CooldownCue
 
 A World of Warcraft addon for **Midnight (12.x)**. When you press an ability that is
 still on cooldown, it briefly flashes the ability's icon with the remaining cooldown
@@ -11,14 +11,14 @@ popup only appears for the long cooldowns you actually want to be reminded about
 
 ## Install
 
-Copy the `CooldownFlash` folder into `World of Warcraft/_retail_/Interface/AddOns/`
+Copy the `CooldownCue` folder into `World of Warcraft/_retail_/Interface/AddOns/`
 (or clone this repository there), then restart the game or `/reload`.
 
 Requires a Midnight client at **12.0.5 or newer**.
 
 ## Commands
 
-`/cdf` or `/cooldownflash`
+`/cdc` or `/cooldowncue`
 
 | Command | Description |
 |---|---|
@@ -35,12 +35,12 @@ Requires a Midnight client at **12.0.5 or newer**.
 | `debug` | Print why each button press was shown or ignored |
 | `probe` | Print every source the addon can find for an ability's cooldown |
 
-Settings are saved per account in `CooldownFlashDB`.
+Settings are saved per account in `CooldownCueDB`.
 
 ## How it works
 
 Since Midnight, cooldown values are "secret" in combat: addons cannot read or compare
-them. CooldownFlash therefore never reads them:
+them. CooldownCue therefore never reads them:
 
 - It decides whether to show the popup using the `isActive` / `isOnGCD` flags, which
   are never secret.
